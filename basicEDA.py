@@ -1,16 +1,39 @@
+# Benedicto Amaty
+# Date: 2025-01-23
+# Description: This script performs basic exploratory data analysis (EDA) on the cleaned dataset.
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns 
 
 df_long = pd.read_csv(r'C:\Users\duart\Desktop\Traffic Violations Project\Traffic-Violation-Analysis\Databases\cleaned_data.csv')
-
 print(df_long.head())
 
 # Get summary statistics and missing values
 print(df_long.describe())
 print(df_long.isnull().sum())
 
-#visualizations start here
+# Summary Statistics for each Category_Group
+category_group_stats = df_long.groupby('Category_Group')['Value'].agg(['mean', 'median', 'sum', 'std', 'min', 'max']).reset_index()
+print("\nSummary Statistics by Category Group:")
+print(category_group_stats)
+
+# Summary Statistics for each Violation Group
+violation_group_stats = df_long.groupby('Violation_Group')['Value'].agg(['mean', 'median', 'sum', 'std', 'min', 'max']).reset_index()
+print("\nSummary Statistics by Violation Group:")
+print(violation_group_stats)
+
+# Summary Statistics for each Year
+yearly_stats = df_long.groupby('Year')['Value'].agg(['mean', 'median', 'sum', 'std', 'min', 'max']).reset_index()
+print("\nSummary Statistics by Year:")
+print(yearly_stats)
+
+# Save these statistics to CSV files if needed
+category_group_stats.to_csv(r'C:\Users\duart\Desktop\Traffic Violations Project\Traffic-Violation-Analysis\Databases\category_group_stats.csv', index=False)
+violation_group_stats.to_csv(r'C:\Users\duart\Desktop\Traffic Violations Project\Traffic-Violation-Analysis\Databases\violation_group_stats.csv', index=False)
+yearly_stats.to_csv(r'C:\Users\duart\Desktop\Traffic Violations Project\Traffic-Violation-Analysis\Databases\yearly_stats.csv', index=False)
+print("\nSummary statistics saved as CSV files.")
+
+# Visualizations start here
 sns.set_style("whitegrid")
 
 # Plot the total counts per year
@@ -31,13 +54,14 @@ plt.ylabel('Total Counts')
 plt.xticks(rotation=90)
 plt.show()
 
-# Plot the counts by Department
+# Plot the counts by Category (split by Category Group)
 plt.figure(figsize=(14, 8))
-sns.barplot(x='Category', y='Value', data=df_long, estimator=sum, ci=None)
-plt.title('Total Counts by Department')
+sns.barplot(x='Category', y='Value', hue='Category_Group', data=df_long, estimator=sum, ci=None)
+plt.title('Total Counts by Category (Split by Category Group)')
 plt.xlabel('Category')
 plt.ylabel('Total Counts')
 plt.xticks(rotation=90)
+plt.legend(title='Category Group')
 plt.show()
 
 # Heatmap of counts by Year and Violation Group
@@ -57,3 +81,5 @@ plt.xlabel('Year')
 plt.ylabel('Total Counts')
 plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
 plt.show()
+
+print("All visualizations have been generated successfully.")
